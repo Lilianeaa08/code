@@ -1,1 +1,38 @@
-
+{
+  "StartAt": "Iniciar Treinamento",
+  "States": {
+    "Iniciar Treinamento": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sagemaker:createTrainingJob.sync",
+      "Parameters": {
+        "TrainingJobName": "job-treinamento-script",
+        "AlgorithmSpecification": {
+          "TrainingImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/pytorch-training:1.12.1-cpu-py38",
+          "TrainingInputMode": "File"
+        },
+        "RoleArn": "arn:aws:iam::123456789012:role/MLOpsRole",
+        "InputDataConfig": [
+          {
+            "ChannelName": "training",
+            "DataSource": {
+              "S3DataSource": {
+                "S3Uri": "s3://dados/scripts/train.py",
+                "S3DataType": "S3Prefix",
+                "S3DataDistributionType": "FullyReplicated"
+              }
+            }
+          }
+        ],
+        "ResourceConfig": {
+          "InstanceCount": 1,
+          "InstanceType": "ml.m5.large",
+          "VolumeSizeInGB": 30
+        },
+        "StoppingCondition": {
+          "MaxRuntimeInSeconds": 3600
+        }
+      },
+      "End": true
+    }
+  }
+}
